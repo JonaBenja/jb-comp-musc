@@ -11,6 +11,7 @@ The playlist for the electronic singer-songwriters was made by a Spotify user an
 
 #### Interesting findings
                                     Mean               SD                  Max                 Min
+                                    
 Acoustic:   Danceability:           0.562              0.111               0.869               0.225
             Energy:                 0.392              0.166               0.899               0.0577
             Loudness:               -10.8              3.28                -4.25              -21.4
@@ -21,6 +22,7 @@ Acoustic:   Danceability:           0.562              0.111               0.869
             Tempo:                  116.                29.3               206.                52.4
 
                                     Mean               SD                  Max                 Min
+                                    
 Electronic: Danceability:           0.636              0.149               0.976               0.289
             Energy:                 0.527              0.180               0.931               0.112
             Loudness:               -8.96              2.86                -4.09               -19.5
