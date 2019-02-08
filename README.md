@@ -10,27 +10,23 @@ There are two corpusses that will be compared. These are Spotify playlists. For 
 The playlist for the electronic singer-songwriters was made by a Spotify user and complemented by me.  It contains many songs that fulfull the criteria from above, but also more songs that belong to the Indie genre, with lots of electric guitars, but no electronic instruments. This playlist does not totally represent the playlist needed to execute this research, but I am planning on adjusting it manually. 
 
 #### Interesting findings
-                                    Mean               SD                  Max                 Min
-                                    
-Acoustic:   Danceability:           0.562              0.111               0.869               0.225
-            Energy:                 0.392              0.166               0.899               0.0577
-            Loudness:               -10.8              3.28                -4.25              -21.4
-            Mode:                   
-            Acousticness:           0.646              0.268               0.986               0.0118
-            Instrumentalness:       0.0360             0.114               0.831               0
-            Valence:                0.407              0.176               0.91                0.0667
-            Tempo:                  116.                29.3               206.                52.4
+The biggest differences in the quick analysis are the energy, acousticness and instrumentalness. The electronic playlist has more energy (mean =  0.527, SD = 0.180), acoustic (mean = 0.392, SD = 0.166). The minimal energy of the electrononic songs is 0.112, twice as high as the acoustic value: 0.0577. 
 
-                                    Mean               SD                  Max                 Min
-                                    
-Electronic: Danceability:           0.636              0.149               0.976               0.289
-            Energy:                 0.527              0.180               0.931               0.112
-            Loudness:               -8.96              2.86                -4.09               -19.5
-            Mode:
-            Acousticness:           0.411              0.292               0.977              0.0025
-            Instrumentalness:       0.121              0.240               0.948                    0
-            Valence:                0.425              0.233               0.957              0.0373
-            Tempo:                  120.               28.4                 204.              70.1
-            
-            
-            
+The next variable to be compared is acousticness. The acoustic playlisy has a higher acousticness, which makes a lot of sense. Acoustic: mean = 0.646, SD = 0.268. Electronic: mean = 0.411, SD = 0.292. The difference is not as big as one would expect though. 
+
+Lastly, the instrumentalness. The acoustic playlist has a very low instrumentalness (mean = 0.0360 SD = 0.114) which is perfectly logical. The instrumentallness of the electronic playlist is a bit higher, but still pretty low (mean = 0.121     , SD = 0.240).
+
+The acoustic playlisy has 33 minor songs, in a total of 471 songs. That's about 7%. The electronic playlist has 83 minor songs, in a total of 218 songs. With 38%, that's a lot more.
+
+#### Extreme values
+In the acoustic playliy, the song 'Seize the Night' by has the highest speechiness, 0.2260. The song below it has 0.1370. The rest of the differences is a lot smaller. 
+
+In the electronic playlisy, the song My bed has the largest danceability (0.976), but the song is in my opinion pretty mellow. It sounds happy, and you could dance to it, but there sure are a lot of songs that sound more danceable to me. 
+
+The song 'Monkeys in my Head' is the most danceable song in the acoustic playlist, 0.869, and sounds about the same as 'My Bed'. Apparently, Spotify and I have a different opnion on danceability. 
+
+I do think that I should include the outliers. 
+
+### Conclusion
+The playlists are more alike than different, but it is inter
+
