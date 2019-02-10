@@ -1,8 +1,8 @@
 # Computational Musicology Week 6 Assignment
 ### Jona Bosman - 11297670
 
-#### Acoustic versus electronic singer-songwriters
-### Introduction
+### Acoustic versus electronic singer-songwriters
+#### Introduction
 
 *This assignment will be about the differences and similarities between electronic and acoustic singer-songwriters. Acoustic and electronic music are a world apart, but it seems now that they can be closer than expected by the fact that both acoustic and electronic singer-songwriters exist. I define acoustic singer-songwriters as 1 or max. 2 people that sing and play exclusively on 1 acoustic instrument, mainly guitar of piano. Examples are Passenger and Ed Sheeran. Electronic singer-songwritersn, to me, are  people who produce their own music containing (not neccesarily but also not limited to) synthesizers, looping stations or drums computers, and are able to perform it live. The music must contain roughly the same amount of singing as the acoustic songs. Examples are Chet Faker and JAIN.* 
 
