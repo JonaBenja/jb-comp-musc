@@ -2,6 +2,7 @@
 ### Jona Bosman - 11297670
 
 #### Acoustic versus electronic singer-songwriters
+### Introduction
 
 *This assignment will be about the differences and similarities between electronic and acoustic singer-songwriters. Acoustic and electronic music are a world apart, but it seems now that they can be closer than expected by the fact that both acoustic and electronic singer-songwriters exist. I define acoustic singer-songwriters as 1 or max. 2 people that sing and play exclusively on 1 acoustic instrument, mainly guitar of piano. Examples are Passenger and Ed Sheeran. Electronic singer-songwritersn, to me, are  people who produce their own music containing (not neccesarily but also not limited to) synthesizers, looping stations or drums computers, and are able to perform it live. The music must contain roughly the same amount of singing as the acoustic songs. Examples are Chet Faker and JAIN.* 
 
@@ -13,9 +14,7 @@ The playlist for the electronic singer-songwriters was made by a Spotify user an
 
 One really typical song in the acoustic playlist is 'Everything'll be Alright (Will's Lullaby)' by Joshua Radin. The most remarkble value is danceability (0.53). The song is very soft and sweet and doesn't sound very danceable to me. A value of 0.53 seems higher than I would expect. I think 0.5 is a nice middle value for danceability. A lot of songs have this value. The value for acousticness is 0.693. Since this is a very acoustic sounding song, I would've expected the song to have higher acoustic value, but compared to the other songs, 0.693 is already pretty high. The mean acousticness of the acoustic playlist is 0.646 (SD = 0.268), so it is already higher than average.
 
-The rest of the values are determined accurately by Spotify. The energy is low (0.157), the speechiness is low (0.0354) because the artist is singing the whole time. The instrumentallness is low (0.197) and the valence is 0.395, since it is not a very happy song.
-
-In the electronic playlist, a typical song is 'Makeba' by JAIN. The song is a lot more danceable than 'Everything'll be Alright (Will's Lullaby)' and that shows in the analysis (0.824). The rest of the features are accurately described by Spotify. The energy is relatively high (0.656), the speechiness is low (0.0704), the instrumentallness is 0.506, because there a few musical breaks. The valence is 0.418 since the song does not sound particularly happy but it sounds more upliving than 'Everything'll be Alright (Will's Lullaby)'. 
+In the electronic playlist, a typical song is 'Makeba' by JAIN. The song is a lot more danceable than 'Everything'll be Alright (Will's Lullaby)' and that shows in the analysis (0.824). The rest of the features are accurately described by Spotify. 
 
 The energy of the two songs is both around 0.5. That seems odd, because 'Makeba' sounds more energised. It can be explained by the tempo. According to Spotify, the tempo of 'Everything'll be Alright (Will's Lullaby)' is 171, but is sounds way slower than that. The tempo of 'Makeba' is 116. It seems logical that the energy of the song will be determined by the tempo.
 
@@ -37,9 +36,7 @@ In the electronic playlist, the song 'My bed' by Marbert Rocel has the largest d
 
 The song 'Monkeys in my Head' is the most danceable song in the acoustic playlist, 0.869, and sounds about the same as 'My Bed'. 
 
-I do think that I should include the outliers. 
+I do think that I should include the outliers because they do sound like representative songs. 
 
 ### Conclusion
-The playlists are more alike than different, but there are some interesting features to explore. The differences in mode and energy. I would've expected a larger difference in danceability, but maybe that'll come forward when the electronic playlist is more representative. 
-
-For a good analysis, the difference in instrumentalness shouldn't be very high because the amount of singing has to be alike. The acousticness can be used to determine if the playlists are representative. The acoustic playlist should have a high acousticness and the electronic playlist should have a low acousticness.
+The playlists are more alike than different, but there are some interesting features to explore. The differences in mode and energy. I would've expected a larger difference in danceability, but maybe that'll come forward when the electronic playlist is more representative.
