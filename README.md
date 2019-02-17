@@ -23,6 +23,8 @@ The biggest differences in the quick analysis are the mode, energy, acousticness
 
 The acoustic playlist has 33 minor songs, in a total of 471 songs. That's about 7%. The electronic playlist has 83 minor songs, in a total of 218 songs. With 38%, that's a lot more. I find this a very interesting difference. Some people find electronic music in general darker and harder to listen to, and a minor key fits that description. This difference in mode fits my research question the best.
 
+![Mode](Rplot_mode.png)
+
 The electronic playlist has more energy (mean =  0.527, SD = 0.180), acoustic (mean = 0.392, SD = 0.166). The minimal energy of the electronic songs is 0.112, twice as high as the value of the acoustic playlist: 0.0577. Energy is an interesting aspect for the research question, especially together with the tempo of the playlists.
 
 The next variable to be compared is acousticness. The acoustic playlist has a higher acousticness, which makes a lot of sense. Acoustic: mean = 0.646, SD = 0.268. Electronic: mean = 0.411, SD = 0.292. The difference is not as big as one would expect though. 
