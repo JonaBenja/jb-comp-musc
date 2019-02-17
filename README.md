@@ -27,15 +27,15 @@ The acoustic playlist has 33 minor songs, in a total of 471 songs. That's about 
 
 The electronic playlist has more energy (mean =  0.527, SD = 0.180), acoustic (mean = 0.392, SD = 0.166). The minimal energy of the electronic songs is 0.112, twice as high as the value of the acoustic playlist: 0.0577. Energy is an interesting aspect for the research question, especially together with the tempo of the playlists.
 
-![Energy(Rplot_energy.png)
+![Energy](Rplot_energy.png)
 
 The next variable to be compared is acousticness. The acoustic playlist has a higher acousticness, which makes a lot of sense. Acoustic: mean = 0.646, SD = 0.268. Electronic: mean = 0.411, SD = 0.292. The difference is not as big as one would expect though. 
 
-![Energy(Rplot_acousticness.png)
+![Acousticness](Rplot_acousticness.png)
 
 Lastly, the instrumentalness. It is clear that the electronic has more instrumental parts in the songs. This could be because of so called 'dancebreaks' that are in a lot of electronic songs. Acoustic songs tend to have these less. There could be acoustic solo's in acoustic songs, but I think they would be shorter than the dancebreaks.
 
-![Energy(Rplot_instrumentalness.png)
+![Instrumentnalness](Rplot_instrumentalness.png)
 
 #### Extreme values
 In the acoustic playlist, the song 'Seize the Night' by Will Varley has the highest speechiness, 0.2260. The song below it has 0.1370. The rest of the differences is a lot smaller. The artists voice sounds very raspy. Maybe this is interpreted as more sounding like speech than smoother voices.
