@@ -1,9 +1,10 @@
 ---
-title: "Untitled"
+title: "Acoustic vs. Electronic Singer-Songwriters"
+author: "Jona Benja Bosman"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: columns
-    vertical_layout: fill
+        storyboard: true
+        theme: lumen
 ---
 
 ```{r setup, include=FALSE}
