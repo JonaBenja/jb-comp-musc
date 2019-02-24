@@ -229,8 +229,8 @@ ggplotly(mode_plot)
 
 ***
 
-The biggest difference between the two playlists is the mode of the songs. In the acoustic playlist, `r num_acoustic / 33 * 100 ` percent of the songs is in minor key. 
-In the electronic playlist, `r num_electronic / 83 * 100 ` percent of the songs is in minor. That is a large difference. That difference is displayed in the barplots shown in this graph. 
+The biggest difference between the two playlists is the mode of the songs. In the acoustic playlist, `r 33 / num_acoustic * 100 ` percent of the songs is in minor key. 
+In the electronic playlist, `r 83 / num_electronic * 100 ` percent of the songs is in minor. That is a large difference. That difference is displayed in the barplots shown in this graph. 
 
 ### Energy
 
@@ -245,6 +245,10 @@ ggplotly(energy_plot)
 
 ***
 
+The difference in energy is notable. The electronic songs have a more energy than the acoustic songs, as you can see in the graph. The higher energy of the electronic playlist could be explained if the tempo of the electronic songs was higher than the tempo of the acoustic songs, but that is not the case, surprisingly. The mean tempo of the acoustic playlist is `r acoustic %>% summarize(mean(tempo))`, (SD = `r  acoustic %>% summarize(sd(tempo))`). and the mean tempo of the electronic playlisy is `r electronic %>% summarize(mean(tempo))`, (SD = `r  electronic %>% summarize(sd(tempo))`). 
+
+An other explanation could be that the electronic songs use other, more, and maybe sharper sounds than acoustic guitars and pianos can produce.
+
 ### Danceability
 
 ```{r}
@@ -258,7 +262,9 @@ ggplotly(danceability_plot)
 
 ***
 
-The difference in danceability is smaller than one would expect. It seems logical that acoustic song are less danceable than electronic songs, mainly because of the electronic drums in electronic songs. But in the acoustic corpus, there are a few songs that are very acoustic, but performed by bands. That could influence the mean danceability value of the whole playlist.
+The difference in danceability is smaller than one would expect. It seems logical that acoustic song are less danceable than electronic songs, mainly because of the electronic drums in electronic songs. But in the acoustic corpus, there are a few songs that are very acoustic, but performed by bands. That could influence the mean danceability value of the whole playlist. 
+
+Maybe acoustic songs are more danceable than we think, or it could be that Spotify included 'slowdancing' in the 'danceable' criterium.
 
 
 ***
@@ -292,18 +298,25 @@ euphoria_chroma %>%
 
 This song is from the acoustic playlist and it indeed sounds very acoustic, but the energy is higher than one would expect and therefore, it is an outlier on the energy graph. This is probably due to the Irish-sounding violin that is in the song. That does give it a lot of energy despite it being an acoustic song.
 
-This chromagram shows the chroma features of the song.
+This chromagram shows the chroma features of the song. You can see that the first 50 seconds are less intense, since it is the beginning of the song and only a guitar is used and played using two notes per chords. A soft playing violin is added before the songs gets a lot more intense at 50 seconds. You can see this transition in the chromagram; almost all the chroma's get lighter. The chroma's get darker in the second verse (80 seconds), but they are lighter than in the first verse. The transition to the second chorus (110 seconds) is not very clearly. 
+
+After the second chorus, the song gets more quiet, like it is going to end, and you can see the chroma's get darker around 180 seconds. Then there is a kind of fade out, until the violin starts to play a solo. This consists of mostly C's because the C chroma gets very light at this point (230 seconds). At 250 seconds, the chroma's start to light up as the song gets more intense. This is most clearly visible in the Ab and F chroma. 
+
+At the end, there is a fade out, which is displayed clearly at the end of the chromagram, where most of the chroma's get really dark, except the few that belong to the pitch class of the notes that are still audible but fading out. 
 
 ### Conclusion
 
 **Conclusion**
 
-The playlists are more alike than different, but there are some interesting features to explore, mainly the differences in mode and energy. The difference in danceability is 
+The playlists are more alike than different, but there are some interesting features to explore, mainly the differences in mode and energy. The chance that an electronic song is minor are higher than the chance an acoustic song is minor. Electronic songs also tend to have more energy than acoustic songs. The difference in danceability is not as big as one would expect.
 
 *** 
 
 **Suggestions for improvement **
-
-  
+- ValueBoxes for number of songs. 
+- Gauges for precentages of minor songs.
+- Tabsets for different plots in one tab Graphs, instead of 3 tabs. 
+- Instead of graph for minor songs, a graph for Acousticness?
+- Instrumentalness? Instead of? or extra?
 
 
