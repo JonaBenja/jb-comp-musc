@@ -18,180 +18,13 @@ library(dplyr)
 source('spotify.R')
 ```
 
-```{r}
-#' Get a tidy audio analysis from Spotify.
-#'
-#' spotifyr returns Spotify's audio analysis as a large list. This function
-#' uses list columns to create a structure that works more richly within the
-#' tidyverse.
-get_tidy_audio_analysis <- function(track_uri, ...) 
-{
-    get_track_audio_analysis(track_uri, ...) %>% 
-        list %>% transpose %>% as_tibble %>% 
-        mutate_at(vars(meta, track), . %>% map(as_tibble)) %>% 
-        unnest(meta, track) %>% 
-        select(
-            analyzer_version,
-            duration,
-            contains('fade'),
-            ends_with('confidence'),
-            bars:segments) %>% 
-        mutate_at(
-            vars(bars, beats, tatums, sections), 
-            . %>% map(bind_rows)) %>% 
-        mutate(
-            segments =
-                map(
-                    segments,
-                    . %>% 
-                        transpose %>% as_tibble %>% 
-                        unnest(.preserve = c(pitches, timbre)) %>% 
-                        mutate(
-                            pitches = 
-                                map(
-                                    pitches, 
-                                    . %>% 
-                                        flatten_dbl %>% 
-                                        set_names(
-                                            c( 
-                                                'C', 'C#|Db', 'D', 'D#|Eb', 
-                                                'E', 'F', 'F#|Gb', 'G',
-                                                'G#|Ab', 'A', 'A#|Bb', 'B'))),
-                            timbre = 
-                                map(
-                                    timbre,
-                                    . %>% 
-                                        flatten_dbl %>% 
-                                        set_names(
-                                            c(
-                                                'c1', 'c2', 'c3', 'c4', 
-                                                'c5', 'c6', 'c7', 'c8',
-                                                'c9', 'c10', 'c11', 'c12'))))))
-}
-```
-
-
-```{r}
-#' Normalise vectors for Computational Musicology.
-#'
-#' We use a number of normalisation strategies in Computational Musicology.
-#' This function brings them together into one place, along with common
-#' alternative names.
-compmus_normalise <- compmus_normalize <- function(v, method = "euclidean")
-{
-    ## Supported functions
-    
-    harmonic  <- function(v) v * sum(1 / abs(v))
-    manhattan <- function(v) v / sum(abs(v))
-    euclidean <- function(v) v / sqrt(sum(v^2))
-    chebyshev <- function(v) v / max(abs(v))
-    clr       <- function(v) {lv <- log(v); lv - mean(lv)}
-    
-    ## Method aliases
-    
-    METHODS <-
-        list(
-            harmonic  = harmonic,
-            manhattan = manhattan,
-            L1        = manhattan,
-            euclidean = euclidean,
-            L2        = euclidean,
-            chebyshev = chebyshev,
-            maximum   = chebyshev,
-            aitchison = clr,
-            clr       = clr)
-    
-    ## Function selection
-    
-
-    if (!is.na(i <- pmatch(method, names(METHODS))))
-        METHODS[[i]](v)
-    else 
-        stop('The method name is ambiguous or the method is unsupported.')
-}
-
-#' Compute pairwise distances for Computational Musicology in long format.
-#'
-#' We use a number of distance measures in Computational Musicology.
-#' This function brings them together into one place, along with common
-#' alternative names. It is designed for convenience, not speed.
-compmus_long_distance <- function(xdat, ydat, feature, method = "euclidean")
-{
-    
-    feature <- enquo(feature)
-    
-    ## Supported functions
-    
-    manhattan <- function(x, y) sum(abs(x - y))
-    euclidean <- function(x, y) sqrt(sum((x - y) ^ 2))
-    chebyshev <- function(x, y) max(abs(x - y))
-    pearson   <- function(x, y) 1 - cor(x, y)
-    cosine    <- function(x, y)
-    {
-        1 - sum(compmus_normalise(x, "euc") * compmus_normalise(y, "euc"))
-    }
-    angular   <- function(x, y) 2 * acos(1 - cosine(x, y)) / pi
-    aitchison <- function(x, y)
-    {
-        euclidean(compmus_normalise(x, "clr"), compmus_normalise(y, "clr"))
-    }
-    
-    ## Method aliases
-    
-    METHODS <-
-        list(
-            manhattan   = manhattan,
-            cityblock   = manhattan,
-            taxicab     = manhattan,
-            L1          = manhattan,
-            totvar      = manhattan,
-            euclidean   = euclidean,
-            L2          = euclidean,
-            chebyshev   = chebyshev,
-            maximum     = chebyshev,
-            pearson     = pearson,
-            correlation = pearson,
-            cosine      = cosine,
-            angular     = angular,
-            aitchison   = aitchison)
-    
-    ## Function selection
-    
-    if (!is.na(i <- pmatch(method, names(METHODS))))
-        bind_cols(
-            crossing(
-                xdat %>% select(xstart = start, xduration = duration),
-                ydat %>% select(ystart = start, yduration = duration)),
-            xdat %>% select(x = !!feature) %>% 
-                crossing(ydat %>% select(y = !!feature)) %>% 
-                transmute(d = map2_dbl(x, y, METHODS[[i]])))
-    else 
-        stop('The method name is ambiguous or the method is unsupported.')
-}
-```
-
-
-```{r}
-#' Gathers chroma vectors into long format.
-#'
-#' Gathers chroma vectors into long format for Computational Musicology.
-compmus_gather_chroma <- function(data)
-{
-    data %>% 
-    mutate(pitches = map(pitches, bind_rows)) %>% unnest(pitches) %>% 
-    gather("pitch_class", "value", C:B) %>% 
-    mutate(pitch_class = fct_shift(factor(pitch_class), 3))
-}
-```
-
-
 Acoustic vs. Electronic Singer-Songwriters
 -----------------------------------------------------------------------
 ### Introduction {data-commentary-width=500}
 
 **Introduction**
 
-This assignment will be about the differences and similarities between electronic and acoustic singer-songwriters. Acoustic and electronic music are a world apart, but it seems now that they can be closer than expected by the fact that both acoustic and electronic singer-songwriters exist. I define acoustic singer-songwriters as 1 or max. 2 people that sing and play exclusively on 1 acoustic instrument, mainly guitar or piano. Examples are Passenger and Ed Sheeran. Electronic singer-songwriters, to me, are people who produce their own music containing (not necessarily but also not limited to) synthesizers, looping stations or drums computers, and are able to perform it live. The music must contain roughly the same amount of singing as the acoustic songs. Examples are Chet Faker and JAIN. 
+This assignment will be about the differences and similarities between electronic and acoustic singer-songwriters. Acoustic and electronic music are a world apart, but it seems now that they can be closer than expected by the fact that both acoustic and electronic singer-songwriters exist. I define acoustic singer-songwriters as 1 or max. 2 people that sing and play exclusively on 1 acoustic instrument, mainly guitar or piano. Examples are Passenger and Ed Sheeran. Electronic singer-songwriters are defined as people who produce their own music containing (not necessarily but also not limited to) synthesizers, looping stations or drums computers, and are able to perform it live. The music must contain roughly the same amount of singing as the acoustic songs. Examples are Chet Faker and JAIN. 
 
 The question that will be examined in this report is: **Apart from the instruments used, what are the major differences between music of acoustic and electronic singer-songwriters?**
 
@@ -207,37 +40,24 @@ num_acoustic <- nrow(acoustic)
 
 ***
 
-**Corpera**
+**Corpora**
 
-There are two corpera that will be compared with each other. These are Spotify playlists. For the acoustic singer-songwriters, a playlist generated by Spotify that was called: **"Acoustic Singer-songwriters"** was chosen. The playlist was checked manually and all the songs satisfied the criteria stated above. This corpus represents the acoustic singer songwriters pretty well. There are **`r num_acoustic`** songs in this playlist.
+There are two corpora that will be compared with each other. These are Spotify playlists. For the acoustic singer-songwriters, a playlist generated by Spotify that was called: **"Acoustic Singer-songwriters"** was chosen. The playlist was checked manually and all the songs satisfied the criteria stated above. This corpus represents the acoustic singer songwriters pretty well. There are **`r num_acoustic`** songs in this playlist.
 
 <br/>
 
-The playlist for the **electronic singer-songwriters** was made by a Spotify user and complemented by me.  It contains many songs that fulfill the criteria from above, but also more songs that belong to the Indie genre, with lots of electric guitars, but no electronic instruments. This playlist does not totally represent the playlist needed to execute this research, but I am planning on adjusting it manually. There are **`r num_electronic`** songs in this playlist.
-
-### Mode
-
-```{r echo = F}
-mode_plot <- ggplot(alles, aes(x = playlist_name, fill = mode)) +
-  geom_bar() +
-  labs(title = "Mode", x = "Playlist", y = "No. of songs") 
-```
-
-```{r echo = F}
-ggplotly(mode_plot)
-```
+The playlist for the **electronic singer-songwriters** was made by a Spotify user and complemented by me.  It contains many songs that fulfill the criteria from above, but also more songs that belong to the Indie genre, with lots of electric guitars, but no electronic instruments. There are **`r num_electronic`** songs in this playlist.
 
 ***
 
-The biggest difference between the two playlists is the mode of the songs. In the acoustic playlist, `r 33 / num_acoustic * 100 ` percent of the songs is in minor key. 
-In the electronic playlist, `r 83 / num_electronic * 100 ` percent of the songs is in minor. That is a large difference. That difference is displayed in the barplots shown in this graph. 
+### Mode, energy, danceability
 
-### Energy
+```{r echo = FALSE}
 
-```{r echo = F}
-energy_plot <- ggplot(alles, aes(x = playlist_name, y = energy)) +
-  geom_boxplot() + 
-  labs(title = "Energy", x = "Playlist", y = "Energy") 
+energy_plot <- ggplot(alles, aes(x = danceability, y = energy, col = mode)) +
+  geom_point() + 
+  facet_wrap(~playlist_name) +
+  labs(title = "Energy, danceability and mode", x = "Danceability", y = "Energy") 
 
 ggplotly(energy_plot)
 
@@ -245,42 +65,34 @@ ggplotly(energy_plot)
 
 ***
 
-The difference in energy is notable. The electronic songs have a more energy than the acoustic songs, as you can see in the graph. The higher energy of the electronic playlist could be explained if the tempo of the electronic songs was higher than the tempo of the acoustic songs, but that is not the case, surprisingly. The mean tempo of the acoustic playlist is `r acoustic %>% summarize(mean(tempo))`, (SD = `r  acoustic %>% summarize(sd(tempo))`). and the mean tempo of the electronic playlisy is `r electronic %>% summarize(mean(tempo))`, (SD = `r  electronic %>% summarize(sd(tempo))`). 
+The biggest difference between the two playlists is the mode of the songs. In the acoustic playlist, `r round((33 / num_acoustic * 100), digits = 2) ` percent of the songs is in minor key. 
+In the electronic playlist, `r round((83 / num_electronic * 100), digits = 2) ` percent of the songs is in minor. That is a large difference. That difference is displayed in the barplots shown in this graph. 
 
-An other explanation could be that the electronic songs use other, more, and maybe sharper sounds than acoustic guitars and pianos can produce.
+The difference in energy is notable. The electronic songs have a more energy than the acoustic songs, as you can see in the graph. 
 
-### Danceability
+The mean energy of the acoustic playlist is `r round((acoustic %>% summarize(mean(energy))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(energy))), digits = 2)`). and the mean energy of the electronic playlist is `r round((electronic %>% summarize(mean(energy))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(energy))), digits = 2)`). 
 
-```{r}
-danceability_plot <- ggplot(alles, aes(x = playlist_name, y = danceability)) +
-  geom_boxplot() + 
-  labs(title = "Danceability", x = "Playlist", y = "Danceability") 
 
-ggplotly(danceability_plot)
+The higher energy of the electronic playlist could be explained if the tempo of the electronic songs was higher than the tempo of the acoustic songs, but that is not the case, surprisingly. The mean tempo of the acoustic playlist is `r round((acoustic %>% summarize(mean(tempo))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(tempo))), digits = 2)`). and the mean tempo of the electronic playlist is `r round((electronic %>% summarize(mean(tempo))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(tempo))), digits = 2)`). 
 
-```
+The difference in danceability is also visible in the graph. There is not one song on the acoustic playlisy that has a danceability larger than 0.8. In the electronic playlist there are many song that exceed that threshold. 
 
-***
-
-The difference in danceability is smaller than one would expect. It seems logical that acoustic song are less danceable than electronic songs, mainly because of the electronic drums in electronic songs. But in the acoustic corpus, there are a few songs that are very acoustic, but performed by bands. That could influence the mean danceability value of the whole playlist. 
+The mean danceability of the acoustic playlist is `r round((acoustic %>% summarize(mean(danceability))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(danceability))), digits = 2)`). and the mean danceability of the electronic playlist is `r round((electronic %>% summarize(mean(danceability))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(danceability))), digits = 2)`). 
 
 Maybe acoustic songs are more danceable than we think, or it could be that Spotify included 'slowdancing' in the 'danceable' criterium.
 
 
-***
-
-
-### Chromogram 'Euphoria' by Dawson Hollow
+### Chromogram Everything'll Be Alright (Wills Lullaby)
 
 ```{r}
-euphoria_chroma <- 
-    get_tidy_audio_analysis('2R8K3yqNyi0B2JyuCdiaje') %>% 
+wills_lullaby_chroma <- 
+    get_tidy_audio_analysis('5ULhLmoyMiCyd3a2pQZYsw') %>% 
     select(segments) %>% unnest(segments) %>% 
     select(start, duration, pitches)
 ```
 
 ```{r}
-euphoria_chroma %>% 
+wills_lullaby_chroma %>% 
     mutate(pitches = map(pitches, compmus_normalise, 'chebyshev')) %>% 
     compmus_gather_chroma %>% 
     ggplot(
@@ -296,27 +108,124 @@ euphoria_chroma %>%
 
 ***
 
-This song is from the acoustic playlist and it indeed sounds very acoustic, but the energy is higher than one would expect and therefore, it is an outlier on the energy graph. This is probably due to the Irish-sounding violin that is in the song. That does give it a lot of energy despite it being an acoustic song.
+This chromagram is overall very dark. It doesn't have many sections or a lot of pitch classes. The blue rectangles are wider than the chromagram on the other page. Maybe that would mean that those notes are hold longer than if the rectangles were less wide. Longer notes could cause a lower energy. The energy of this song is 0.157 and the tempo is 170. I think the tempo measure is wrong. 
 
-This chromagram shows the chroma features of the song. You can see that the first 50 seconds are less intense, since it is the beginning of the song and only a guitar is used and played using two notes per chords. A soft playing violin is added before the songs gets a lot more intense at 50 seconds. You can see this transition in the chromagram; almost all the chroma's get lighter. The chroma's get darker in the second verse (80 seconds), but they are lighter than in the first verse. The transition to the second chorus (110 seconds) is not very clearly. 
 
-After the second chorus, the song gets more quiet, like it is going to end, and you can see the chroma's get darker around 180 seconds. Then there is a kind of fade out, until the violin starts to play a solo. This consists of mostly C's because the C chroma gets very light at this point (230 seconds). At 250 seconds, the chroma's start to light up as the song gets more intense. This is most clearly visible in the Ab and F chroma. 
+### Chromoagram Dynabeat
 
-At the end, there is a fade out, which is displayed clearly at the end of the chromagram, where most of the chroma's get really dark, except the few that belong to the pitch class of the notes that are still audible but fading out. 
+```{r echo = F}
+dynabeat_chroma <- 
+    get_tidy_audio_analysis('2n1Bg0FjuKy7YEKrGyheay') %>% 
+    select(segments) %>% unnest(segments) %>% 
+    select(start, duration, pitches)
+```
+
+```{r echo = F}
+dynabeat_chroma %>% 
+    mutate(pitches = map(pitches, compmus_normalise, 'chebyshev')) %>% 
+    compmus_gather_chroma %>% 
+    ggplot(
+        aes(
+            x = start + duration / 2, 
+            width = duration, 
+            y = pitch_class, 
+            fill = value)) + 
+    geom_tile() +
+    labs(x = 'Time (s)', y = NULL, fill = 'Magnitude') +
+    theme_minimal()
+```
+
+***
+
+This chromagram is much bluer than the previous one. That could be because more instruments are used at the same time causing more notes to be played at the same time. You could discriminate different sections in the song. It is also clear that the rectangles are very narrow, which could increase the energy and or tempo. The energy of this song is 0.613 and the tempo is 110. 
+
+### SSM 'Clean' by The Japanese House
+
+```{r eval = F}
+clean <- 
+    get_tidy_audio_analysis('2vIwwTufmg8YfZn5qvzxIg') %>% 
+    compmus_align(beats, segments) %>% 
+    select(beats) %>% unnest(beats) %>% 
+    mutate(
+        pitches = 
+            map(segments, 
+                compmus_summarise, pitches, 
+                method = 'rms', norm = 'euclidean')) %>% 
+      mutate(
+          timbre = 
+              map(segments, 
+                  compmus_summarise, timbre, 
+                  method = 'mean'))
+```
+
+```{r eval = F}
+clean %>% 
+    compmus_gather_timbre %>% 
+    ggplot(
+        aes(
+            x = start + duration / 2, 
+            width = duration, 
+            y = basis, 
+            fill = value)) + 
+    geom_tile() +
+    labs(x = 'Time (s)', y = NULL, fill = 'Magnitude') +
+    scale_fill_viridis_c(option = 'E') +
+    theme_classic()
+```
+
+```{r eval = F}
+clean %>% 
+    compmus_self_similarity(timbre, 'cosine') %>% 
+    ggplot(
+        aes(
+            x = xstart + xduration / 2, 
+            width = xduration,
+            y = ystart + yduration / 2,
+            height = yduration,
+            fill = d)) + 
+    geom_tile() +
+    coord_fixed() +
+    scale_fill_viridis_c(option = 'E', guide = 'none') +
+    theme_classic() +
+    labs(x = '', y = '')
+```
+
+```{r eval = F}
+clean %>% 
+    compmus_self_similarity(chroma, 'cosine') %>% 
+    ggplot(
+        aes(
+            x = xstart + xduration / 2, 
+            width = xduration,
+            y = ystart + yduration / 2,
+            height = yduration,
+            fill = d)) + 
+    geom_tile() +
+    coord_fixed() +
+    scale_fill_viridis_c(option = 'E', guide = 'none') +
+    theme_classic() +
+    labs(x = '', y = '')
+```
+
+***
+
+Sadly, while trying to make the SSM, I got an error which I wasn't able to fix before the deadline. I will fix it next week!
+
 
 ### Conclusion
 
 **Conclusion**
 
-The playlists are more alike than different, but there are some interesting features to explore, mainly the differences in mode and energy. The chance that an electronic song is minor are higher than the chance an acoustic song is minor. Electronic songs also tend to have more energy than acoustic songs. The difference in danceability is not as big as one would expect.
+The playlists are more alike than different, but there are some interesting features to explore, mainly the differences in mode and energy. The chance that an electronic song is minor are higher than the chance an acoustic song is minor. Electronic songs also tend to have more energy than acoustic songs, and a higher danceability.
 
+The chromagram of an electronic song has many more different sections and more different pitch classes than acoustic songs. If this differnce would be generalizable, one could say that electronic singer-songwriter songs are more variably than acoustic singer-songwriter songs.
+
+I sadly can't say anything about the Self Similarity Matrices.
 *** 
 
 **Suggestions for improvement **
-- ValueBoxes for number of songs. 
-- Gauges for precentages of minor songs.
-- Tabsets for different plots in one tab Graphs, instead of 3 tabs. 
-- Instead of graph for minor songs, a graph for Acousticness?
-- Instrumentalness? Instead of? or extra?
+- Automatically compute percentage of minor songs.
+- Get SSMs to display (on the same page)
+- Get both chromagrams on the same page.
 
 
