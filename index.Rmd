@@ -26,9 +26,19 @@ Acoustic vs. Electronic Singer-Songwriters
 
 **Introduction**
 
-This assignment will be about the differences and similarities between electronic and acoustic singer-songwriters. Acoustic and electronic music are a world apart, but it seems now that they can be closer than expected by the fact that both acoustic and electronic singer-songwriters exist. I define acoustic singer-songwriters as 1 or max. 2 people that sing and play exclusively on 1 acoustic instrument, mainly guitar or piano. Examples are Passenger and Ed Sheeran. Electronic singer-songwriters are defined as people who produce their own music containing (not necessarily but also not limited to) synthesizers, looping stations or drums computers, and are able to perform it live. The music must contain roughly the same amount of singing as the acoustic songs. Examples are Chet Faker and JAIN. 
+This assignment will be about the differences and similarities between electronic and acoustic singer-songwriters. Acoustic and electronic music are a world apart, but it seems now that they can be closer than expected by the fact that both acoustic and electronic singer-songwriters exist. I define acoustic singer-songwriters as 1 person that sings and plays exclusively on 1 acoustic instrument, mainly guitar or piano. Examples are Passenger and Ed Sheeran. 
 
-The question that will be examined in this report is: **Apart from the instruments used, what are the major differences between music of acoustic and electronic singer-songwriters?**
+Electronic singer-songwriters are defined as people who produce their own music containing (not necessarily but also not limited to) synthesizers, looping stations or drums computers, and are able to perform it live. The music must contain roughly the same amount of singing as the acoustic songs. Examples are Chet Faker and JAIN. 
+
+The question that will be examined in this report is: **What are the major differences between music of acoustic and electronic singer-songwriters and where do they overlap?**
+
+In this investigation, the following analyses will be presented. When 2 songs are compared sections (2 to 5), the first song always is a song from the acoustic playlisy and the second song is one from the electronic playlist.
+
+1. Mode, danceability, energy
+2. Chromagram 'Dynabeat' and 'Will's lullaby'
+3. SSM Timbre & Pitches 'North Swallow' and 'Clean'
+4. Chordograms 'This' and 'LEKKER MET DE MEIDEN'
+5. Keygrams 'Heart's On Fire' and 'Doesn't Matter (voleur de soleil)'
 
 ```{r}
 acoustic <- get_playlist_audio_features('11122498650', '0a2aX4LlpTkeYLuTrVUu88')
@@ -48,7 +58,7 @@ There are two corpora that will be compared with each other. These are Spotify p
 
 <br/>
 
-The playlist for the **electronic singer-songwriters** was made by a Spotify user and complemented by me.  It contains many songs that fulfill the criteria from above, but also more songs that belong to the Indie genre, with lots of electric guitars, but no electronic instruments. There are **`r num_electronic`** songs in this playlist.
+The playlist for the **electronic singer-songwriters** was made by a Spotify user and complemented by me.  It contains many songs that fulfill the criteria from above, but also some songs that belong to the indie genre, with lots of electric guitars, but no electronic instruments. There are **`r num_electronic`** songs in this playlist. These songs were manually filtered from this playlist as much as possible.
 
 ***
 
@@ -62,31 +72,31 @@ energy_plot <- ggplot(alles, aes(x = danceability, y = energy, col = mode)) +
   labs(title = "Energy, danceability and mode", x = "Danceability", y = "Energy") 
 
 ggplotly(energy_plot)
-
 ```
 
 ***
 
-The biggest difference between the two playlists is the mode of the songs. In the acoustic playlist, `r round((33 / num_acoustic * 100), digits = 2) ` percent of the songs is in minor key. 
-In the electronic playlist, `r round((83 / num_electronic * 100), digits = 2) ` percent of the songs is in minor. That is a large difference. That difference is displayed in the barplots shown in this graph. 
+The biggest difference between the two playlists is the mode of the songs. In the acoustic playlist, **`r round((16 / num_acoustic * 100), digits = 2)`** percent of the songs is in minor key. 
+In the electronic playlist, **`r round((74 / num_electronic * 100), digits = 2)`** percent of the songs is in minor. That is a large difference. That difference is displayed in the barplots shown in this graph. 
 
 The difference in energy is notable. The electronic songs have a more energy than the acoustic songs, as you can see in the graph. 
 
-The mean energy of the acoustic playlist is `r round((acoustic %>% summarize(mean(energy))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(energy))), digits = 2)`). and the mean energy of the electronic playlist is `r round((electronic %>% summarize(mean(energy))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(energy))), digits = 2)`). 
+The mean energy of the acoustic playlist is **`r round((acoustic %>% summarize(mean(energy))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(energy))), digits = 2)`)**. and the mean energy of the electronic playlist is ** `r round((electronic %>% summarize(mean(energy))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(energy))), digits = 2)`) **. 
 
+The higher energy of the electronic playlist could be explained if the tempo of the electronic songs was higher than the tempo of the acoustic songs, but that is not the case, surprisingly. The mean tempo of the acoustic playlist is **`r round((acoustic %>% summarize(mean(tempo))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(tempo))), digits = 2)`)**. and the mean tempo of the electronic playlist is **`r round((electronic %>% summarize(mean(tempo))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(tempo))), digits = 2)`)**. 
 
-The higher energy of the electronic playlist could be explained if the tempo of the electronic songs was higher than the tempo of the acoustic songs, but that is not the case, surprisingly. The mean tempo of the acoustic playlist is `r round((acoustic %>% summarize(mean(tempo))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(tempo))), digits = 2)`). and the mean tempo of the electronic playlist is `r round((electronic %>% summarize(mean(tempo))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(tempo))), digits = 2)`). 
+The difference in danceability is also visible in the graph. There is not one song on the acoustic playlisy that has a danceability larger than 0.8. In the electronic playlist there are many songs that exceed that threshold. 
 
-The difference in danceability is also visible in the graph. There is not one song on the acoustic playlisy that has a danceability larger than 0.8. In the electronic playlist there are many song that exceed that threshold. 
+The mean danceability of the acoustic playlist is **`r round((acoustic %>% summarize(mean(danceability))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(danceability))), digits = 2)`)**. and the mean danceability of the electronic playlist is **`r round((electronic %>% summarize(mean(danceability))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(danceability))), digits = 2)`)**. 
 
-The mean danceability of the acoustic playlist is `r round((acoustic %>% summarize(mean(danceability))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(danceability))), digits = 2)`). and the mean danceability of the electronic playlist is `r round((electronic %>% summarize(mean(danceability))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(danceability))), digits = 2)`). 
+From this section, we can conclude that electronic songs tend to be more moody than acoustic songs, due to the number of minor songs, acoustic songs are less danceable than electronic ones and have less energy.
 
-Maybe acoustic songs are more danceable than we think, or it could be that Spotify included 'slowdancing' in the 'danceable' criterium.
+**UPDATE**
+Suddenly, summaries for the electronic playlist return 'NA', while the playlist hasn't changed and the code for computing the summaries haven't changed as well. I don't how to solve this problem, so I will ask dr. Bourgoyne the next lecture how to fix this.
 
+### Chromograms 'Everything'll Be Alright' and 'Dynabeat'
 
-### Chromogram Everything'll Be Alright (Wills Lullaby)
-
-![](chroma_lullaby.png)  ![](chroma_dynabeat.png)
+![](graphs/chromagram_lullaby.png)  ![](graphs/chromagram_dynabeat.png)
 
 ```{r eval = F}
 wills_lullaby_chroma <- 
@@ -106,16 +116,9 @@ wills_lullaby_chroma %>%
             y = pitch_class, 
             fill = value)) + 
     geom_tile() +
-    labs(x = 'Time (s)', y = NULL, fill = 'Magnitude') +
+    labs(x = 'Time (s)', y = NULL, fill = 'Magnitude', title = "'Everything'll Be Alright (Will's Lullaby') by Joshua Radin") +
     theme_minimal()
 ```
-
-***
-
-This chromagram is overall very dark. It doesn't have many sections or a lot of pitch classes. The blue rectangles are wider than the chromagram on the other page. Maybe that would mean that those notes are hold longer than if the rectangles were less wide. Longer notes could cause a lower energy. The energy of this song is 0.157 and the tempo is 170. I think the tempo measure is wrong. 
-
-This chromagram is much bluer than the previous one. That could be because more instruments are used at the same time causing more notes to be played at the same time. You could discriminate different sections in the song. It is also clear that the rectangles are very narrow, which could increase the energy and or tempo. The energy of this song is 0.613 and the tempo is 110. 
-
 
 ```{r eval = F}
 dynabeat_chroma <- 
@@ -136,14 +139,83 @@ dynabeat_chroma %>%
             y = pitch_class, 
             fill = value)) + 
     geom_tile() +
-    labs(x = 'Time (s)', y = NULL, fill = 'Magnitude') +
+    labs(x = 'Time (s)', y = NULL, fill = 'Magnitude', title = "'Dynabeat' by JAIN") +
     theme_minimal()
 ```
 
+***
 
-### Cepstogram & SSM'Clean' by The Japanese House
+The chromagram of **'Everything'll be Alright'**  is overall darker than the chromagram of **'Dynabeat'**. The blue rectangles are wider than the other chromagram. That probably means those notes are hold longer than when the rectangles woudl be less wide. Longer notes could cause a lower energy. The energy of this song is 0.157 and the tempo is 170. The tempo measure seemed very high, so the tempo of this song was checked manually by tapping along on the website: http://www.beatsperminuteonline.com/. The outcome was 85 bpm. This is exactly half of the tempo Spotify measured and it makes sense, since one could tap twice as fast and then get 170 bpm as the tempo. Since most other acoustic songs has a tempo around 90 bpm, it seems that 85 bpm would be the correct tempo for **'Everything'll be Allright'**.
 
-![](cepstrogram_clean.png)  ![](ssm_clean.png)
+The **'Dynabeat'** chromagram has more blue than the previous one. That could be because more instruments are used at the same time causing more notes to be played at the same time. You could discriminate different sections in the song. It is also clear that the rectangles are very narrow, which could increase the energy and or tempo. The energy of this song is 0.613 and the tempo is 110. 
+
+
+### Chroma- and Timbre Self Similarity Matrices ('North Swallow')
+
+![](graphs/ssm_chroma_north.png) ![](graphs/ssm_timbre_north.png) 
+
+```{r eval = F}
+north <- 
+    get_tidy_audio_analysis('3EapLR52jlyZQThOthMqpa') %>% 
+    compmus_align(beats, segments) %>% 
+    select(beats) %>% unnest(beats) %>% 
+    mutate(
+        pitches = 
+            map(segments, 
+                compmus_summarise, pitches, 
+                method = 'rms', norm = 'euclidean')) %>% 
+      mutate(
+          timbre = 
+              map(segments, 
+                  compmus_summarise, timbre, 
+                  method = 'mean'))
+```
+
+```{r eval = F}
+north %>% 
+    compmus_self_similarity(pitches, 'cosine') %>% 
+    ggplot(
+        aes(
+            x = xstart + xduration / 2, 
+            width = xduration,
+            y = ystart + yduration / 2,
+            height = yduration,
+            fill = d)) + 
+    geom_tile() +
+    coord_fixed() +
+    scale_fill_viridis_c(option = 'E', guide = 'none') +
+    theme_classic() +
+    labs(x = '', y = '', title = "'North Swallow' by Barn Swallow (Chroma)")
+```
+
+```{r eval = F}
+north %>% 
+    compmus_self_similarity(timbre, 'cosine') %>% 
+    ggplot(
+        aes(
+            x = xstart + xduration / 2, 
+            width = xduration,
+            y = ystart + yduration / 2,
+            height = yduration,
+            fill = d)) + 
+    geom_tile() +
+    coord_fixed() +
+    scale_fill_viridis_c(option = 'E', guide = 'none') +
+    theme_classic() +
+    labs(x = '', y = '', title = "'North Swallow' by Barn Swallow (Timbre)")
+```
+
+
+
+***
+
+The chromabased SSM of **'North Swallow'** has a very clean checkerboard structure. The intro is used during the verses, which you can clearly see in the first checkerboard block. The bright yellow stripe is the first chorus, which is repeated 2 more times. The verses and chorusses are repeated with exactly the same sounds, which could be reason this SSM is so clean and tidy.
+
+The timbre based SSM is not very bright because the song contains mainly acoustic guitar. There are barely any changes in the instruments that are used. There are drums, but they are roughly the same during the song. The timbre SSM of **'Clean'** is also less bright than the chroma SSM, but it is a bit brighter than this timbre SSM. 
+
+### Chroma- and Timbre Self Similarity Matrices ('Clean')
+
+![](graphs/ssm_chroma_clean.png) ![](graphs/ssm_timbre_clean.png) 
 
 ```{r eval = F}
 clean <- 
@@ -164,24 +236,20 @@ clean <-
 
 ```{r eval = F}
 clean %>% 
-    compmus_gather_timbre %>% 
+    compmus_self_similarity(pitches, 'cosine') %>% 
     ggplot(
         aes(
-            x = start + duration / 2, 
-            width = duration, 
-            y = basis, 
-            fill = value)) + 
+            x = xstart + xduration / 2, 
+            width = xduration,
+            y = ystart + yduration / 2,
+            height = yduration,
+            fill = d)) + 
     geom_tile() +
-    labs(x = 'Time (s)', y = NULL, fill = 'Magnitude') +
-    scale_fill_viridis_c(option = 'E') +
-    theme_classic()
+    coord_fixed() +
+    scale_fill_viridis_c(option = 'E', guide = 'none') +
+    theme_classic() +
+    labs(x = '', y = '', title = "'Clean' by The Japanese House (Chroma)")
 ```
-
-***
-
-Comments
-
-### SSM 'Clean' by The Japanese House
 
 ```{r eval = F}
 clean %>% 
@@ -197,14 +265,21 @@ clean %>%
     coord_fixed() +
     scale_fill_viridis_c(option = 'E', guide = 'none') +
     theme_classic() +
-    labs(x = '', y = '')
+    labs(x = '', y = '', title = "'Clean' by The Japanese House (Timbre)")
 ```
 
 ***
 
-it works now!
+The chroma- and timbrebased Self Similarity Matrices (SSM's) line up really well. The song has a chorus of 2 sentences and 2 verses. The chorusses are shown clearly in the three yellow lines at the beginning of the song. Later on, the lines appear again but they are surrounded by other yellow parts. This proabably is the part where 2 voices sing different parts at the same time, which causes the chorus to stand out less in this SSM. The chromabased SSM is overall very bright and yellow. It is brighter than the chromabased SSM of **'North Swallow'**. We've already seen this difference between the chromagrams of 'Everything'll be Alright' and **'Dynabeat'**. The differnce between the SSM's could as well explained by the fact that electronic musicians can use more instruments at the same time by looping them.
 
-### Week 10
+The chorusses are visible in the timbre SSM (the yellow vertical stripes), but the timbre of the chorusses are different. The instrumental music during the chorus changes almost everything it is sung, that is why the timbre is not exactly the same, but since it is the same part, you can still distinguish the chorusses in this SSM. 
+
+We can conclude that the acoustic song, **'North Swallow'**,  has a clearer chroma structure than the electronic song, **'Clean'**, but that **'Clean'** has more timbre variation.
+
+
+### Chordograms 'This' and 'LEKKER MET DE MEIDEN'
+
+![](graphs/chordogram_bars_this.png) ![](graphs/chordogram_bars_meiden.png)
 
 ```{r}
 circshift <- function(v, n) {if (n == 0) v else c(tail(v, n), head(v, -n))}
@@ -292,9 +367,91 @@ key_templates <-
 ```
 
 
-```{r}
-twenty_five <- 
-    get_tidy_audio_analysis('5UVsbUV0Kh033cqsZ5sLQi') %>% 
+```{r eval = F}
+this <- 
+    get_tidy_audio_analysis('0pJfsPQesJyCnR5XWZyvj9') %>% 
+    compmus_align(bars, segments) %>% 
+    select(bars) %>% unnest(bars) %>% 
+    mutate(
+        pitches = 
+            map(segments, 
+                compmus_summarise, pitches, 
+                method = 'mean', norm = 'manhattan'))
+    
+```
+
+```{r eval = F}
+this %>% 
+    compmus_match_pitch_template(chord_templates, 'euclidean', 'manhattan') %>% 
+    ggplot(
+        aes(x = start + duration / 2, width = duration, y = name, fill = d)) +
+    geom_tile() +
+    scale_fill_viridis_c(option = 'E', guide = 'none') +
+    theme_minimal() +
+    labs(x = 'Time (s)', y = '', title = "'This' by Ed Sheeran")
+```
+
+```{r eval = F}
+meiden <- 
+    get_tidy_audio_analysis('299LhIMXI22rIBL96xjJ0S') %>% 
+    compmus_align(bars, segments) %>% 
+    select(bars) %>% unnest(bars) %>% 
+    mutate(
+        pitches = 
+            map(segments, 
+                compmus_summarise, pitches, 
+                method = 'mean', norm = 'manhattan'))
+```
+
+```{r eval = F}
+meiden %>% 
+    compmus_match_pitch_template(chord_templates, 'euclidean', 'manhattan') %>% 
+    ggplot(
+        aes(x = start + duration / 2, width = duration, y = name, fill = d)) +
+    geom_tile() +
+    scale_fill_viridis_c(option = 'E', guide = 'none') +
+    theme_minimal() +
+    labs(x = 'Time (s)', y = '', title = "'LEKKER MET DE MEIDEN' by MEROL")
+```
+
+***
+
+**'This'** has roughly the same chords for the whole song, mostly B:maj/B:7 and E:maj/E:7. You can see this in the chordogram by the blue parts at the top. The song is pretty monotonous and doesn't change much.
+
+**'LEKKER MET DE MEIDEN'** uses more different chords, but still the same chords over de whole song. Different sections are only distinguished by the yellow parts, but the chords that are played, are played the whole song. The chorus sound different than the verses, but it could be that the key of the chorus is the same as the verses and the same chords are just played differently.  
+
+To investigate this further, I have also made keygrams of these to songs, show in the net tab.
+
+### Keygrams 'This' and 'LEKKER MET DE MEIDEN'
+
+![](graphs/keygram_this.png) ![](graphs/keygram_meiden.png) 
+
+```{r eval = F}
+key_this <- 
+    get_tidy_audio_analysis('0pJfsPQesJyCnR5XWZyvj9') %>% 
+    compmus_align(sections, segments) %>% 
+    select(sections) %>% unnest(sections) %>% 
+    mutate(
+        pitches = 
+            map(segments, 
+                compmus_summarise, pitches, 
+                method = 'mean', norm = 'manhattan'))
+```
+
+```{r eval = F}
+key_this %>% 
+    compmus_match_pitch_template(key_templates, 'euclidean', 'manhattan') %>% 
+    ggplot(
+        aes(x = start + duration / 2, width = duration, y = name, fill = d)) +
+    geom_tile() +
+    scale_fill_viridis_c(option = 'E', guide = 'none') +
+    theme_minimal() +
+    labs(x = 'Time (s)', y = '', title = "'This' by Ed Sheeran")
+```
+
+```{r eval = F}
+key_meiden <- 
+    get_tidy_audio_analysis('299LhIMXI22rIBL96xjJ0S') %>% 
     compmus_align(sections, segments) %>% 
     select(sections) %>% unnest(sections) %>% 
     mutate(
@@ -305,41 +462,98 @@ twenty_five <-
     
 ```
 
-```{r}
-twenty_five %>% 
+```{r eval = F}
+key_meiden %>% 
     compmus_match_pitch_template(key_templates, 'euclidean', 'manhattan') %>% 
     ggplot(
         aes(x = start + duration / 2, width = duration, y = name, fill = d)) +
     geom_tile() +
     scale_fill_viridis_c(option = 'E', guide = 'none') +
     theme_minimal() +
-    labs(x = 'Time (s)', y = '')
+    labs(x = 'Time (s)', y = '', title = "'LEKKER MET DE MEIDEN' by MEROL")
 ```
 
 ***
 
-### Week 10.2
+In the keygram of **'This'**, one can see the different sections more clearly. The keygram is ofcourse aligned by sections, so the differences are clearer already, but you can now see two sections in the keygram around 100 and 150 ms that are different than the rest. These sections are indeed different than the rest when one listens to the song. At closer inspection of the chordogram, one can see these differences, but they're a lost less clear than in the keygram.
+
+The keygram and chordogram of **'LEKKER MET DE MEIDEN'** is much more the same. The sections in the keygram are very visible in the chordogram as well. The key changes in the second section, which was not what was expected based on the chordogram. 
+
+### Keygrams 'Heart's on Fire' and 'Doesn't Matter (voleur de soleil'
+
+![](graphs/keygram_heartsonfire.png) ![](graphs/keygram_voleur.png) 
+
+```{r eval = F}
+heartsonfire <- 
+    get_tidy_audio_analysis('07aKyFK2HxHj2Ikxo1gLoU') %>% 
+    compmus_align(sections, segments) %>% 
+    select(sections) %>% unnest(sections) %>% 
+    mutate(
+        pitches = 
+            map(segments, 
+                compmus_summarise, pitches, 
+                method = 'mean', norm = 'manhattan'))
+```
+
+```{r eval = F}
+heartsonfire %>% 
+    compmus_match_pitch_template(key_templates, 'euclidean', 'manhattan') %>% 
+    ggplot(
+        aes(x = start + duration / 2, width = duration, y = name, fill = d)) +
+    geom_tile() +
+    scale_fill_viridis_c(option = 'E', guide = 'none') +
+    theme_minimal() +
+    labs(x = 'Time (s)', y = '', title = "'Heart's On Fire' by Passenger")
+```
+
+```{r eval = F}
+voleur <- 
+    get_tidy_audio_analysis('1E84UmsefPBdAZmUS4qrYv') %>% 
+    compmus_align(sections, segments) %>% 
+    select(sections) %>% unnest(sections) %>% 
+    mutate(
+        pitches = 
+            map(segments, 
+                compmus_summarise, pitches, 
+                method = 'mean', norm = 'manhattan'))
+    
+```
+
+```{r eval = F}
+voleur %>% 
+    compmus_match_pitch_template(key_templates, 'euclidean', 'manhattan') %>% 
+    ggplot(
+        aes(x = start + duration / 2, width = duration, y = name, fill = d)) +
+    geom_tile() +
+    scale_fill_viridis_c(option = 'E', guide = 'none') +
+    theme_minimal() +
+    labs(x = 'Time (s)', y = '', title = "'Doesn't Matter (voleur de soleil' by Christine and the Queens")
+```
+
+***
+
+These keygrams aren't all that different. **'Doesn't Matter'** has a large section where a lot of keys match the pitch information, whereas **'Heart's On Fire'** most of the time has one or two clear dark blue lines. This difference could again be explained by the use of multiple instruments at the same time in the electronic songs.
+
+### Large Graph
 
 ```{r}
-bebop <-
-    get_playlist_audio_features(
-        'thesoundsofspotify', 
-        '55s8gstHcaCyfU47mQgLrB') %>% 
+acoust <-
+    get_playlist_audio_features('11122498650', 
+                                '0a2aX4LlpTkeYLuTrVUu88') %>% 
     slice(1:30) %>% 
     add_audio_analysis()
-bigband <-
-    get_playlist_audio_features(
-        'thesoundsofspotify', 
-        '2cjIvuw4VVOQSeUAZfNiqY') %>% 
+elect <-
+    get_playlist_audio_features('11122498650', 
+                                '2cANvNRpfzoZ6rkoaJQg25') %>% 
     slice(1:30) %>% 
     add_audio_analysis()
-jazz <-
-    bebop %>% mutate(genre = "Bebop") %>%
-    bind_rows(bigband %>% mutate(genre = "Big Band"))
+singsong <-
+    acoust %>% mutate(genre = "Acoustic") %>%
+    bind_rows(elect %>% mutate(genre = "Electronic"))
 ```
 
 ```{r}
-jazz %>% 
+singsong %>% 
     mutate(
         sections = 
             map(
@@ -363,15 +577,19 @@ jazz %>%
         y = 'SD Tempo', 
         colour = 'Genre', 
         size = 'Duration (min)', 
-        alpha = 'Volume (dBFS)')
+        alpha = 'Volume (dBFS)',
+        title = "Title")
 ```
+
 
 ***
 
-### Week 10.3
+Since we're going to expand these kind of graphs next week, I will write down commentary and conclusions for this graph, that might next week.
+
+### Timbre Coefficients Of the Playlists
 
 ```{r}
-jazz %>% 
+singsong %>% 
     mutate(
         timbre =
             map(
@@ -384,24 +602,28 @@ jazz %>%
     ggplot(aes(x = basis, y = value, fill = genre)) +
     geom_violin() +
     scale_fill_viridis_d() +
-    labs(x = 'Spotify Timbre Coefficients', y = '', fill = 'Genre')
+    labs(x = 'Spotify Timbre Coefficients', y = '', fill = 'Genre', titel = "Timbre ofthe playlists")
 ```
 
 ***
 
+The biggest timbre differences seem to be in coefficients c3, c4 and c5, but that should be verified with cepstrograms and listening tests of specific pieces, supported by the Spotify documentation for its timbre features.
 
 ### Conclusion
 
 **Conclusion**
 
-The playlists are more alike than different, but there are some interesting features to explore, mainly the differences in mode and energy. The chance that an electronic song is minor are higher than the chance an acoustic song is minor. Electronic songs also tend to have more energy than acoustic songs, and a higher danceability.
-
-The chromagram of an electronic song has many more different sections and more different pitch classes than acoustic songs. If this differnce would be generalizable, one could say that electronic singer-songwriter songs are more variably than acoustic singer-songwriter songs.
+- Electronic more minor songs
+- Electronic higher danceability and energy
+- Electronic songs have more pitch classes in the songs
+- Acoustic songs have a clearer structure in chordprogressions and keys.
+- Electronic songs have more timbre variation
 
 *** 
 
 **Suggestions for improvement **
-* Automatically compute percentage of minor songs.
-* Get SSMs to display (on the same page)
-* Get both chromagrams on the same page.
+
+- Automatically compute percentage of minor songs.
+- Write conclusion
+- 
 
