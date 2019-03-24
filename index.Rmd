@@ -9,6 +9,8 @@ output:
 ```{r setup, message=F}
 library(flexdashboard)
 library(tidyverse)
+library(tidymodels)
+library(recipes)
 library(plotly)
 library(Cairo)
 library(spotifyr)
@@ -17,6 +19,10 @@ library(plyr)
 library(dplyr)
 library(compmus)
 library(knitr)
+library(robustbase)
+library(ggdendro)
+library(protoclust)
+library(heatmaply)
 source('spotify.R')
 ```
 
@@ -32,7 +38,7 @@ Electronic singer-songwriters are defined as people who produce their own music 
 
 The question that will be examined in this report is: **What are the major differences between music of acoustic and electronic singer-songwriters and where do they overlap?**
 
-In this investigation, the following analyses will be presented. When 2 songs are compared sections (2 to 5), the first song always is a song from the acoustic playlisy and the second song is one from the electronic playlist.
+In this investigation, the following analyses will be presented. When 2 songs are compared sections (2 to 5), the first song always is a song from the acoustic playlisy and the second song is one from the electronic playlist. The songs all always archetypes of the playlits. The reason for this is to be able to generalize the conclusions (as much as possible) over the whole playlists.
 
 1. Mode, danceability, energy
 2. Chromagram 'Dynabeat' and 'Will's lullaby'
@@ -60,16 +66,14 @@ There are two corpora that will be compared with each other. These are Spotify p
 
 The playlist for the **electronic singer-songwriters** was made by a Spotify user and complemented by me.  It contains many songs that fulfill the criteria from above, but also some songs that belong to the indie genre, with lots of electric guitars, but no electronic instruments. There are **`r num_electronic`** songs in this playlist. These songs were manually filtered from this playlist as much as possible.
 
-***
-
 ### Mode, energy, danceability
 
 ```{r}
 
-energy_plot <- ggplot(alles, aes(x = danceability, y = energy, col = mode)) +
-  geom_point() + 
+energy_plot <- ggplot(alles, aes(x = danceability, y = speechiness, col = mode)) +
+  geom_jitter() + 
   facet_wrap(~playlist_name) +
-  labs(title = "Energy, danceability and mode", x = "Danceability", y = "Energy") 
+  labs(title = "Speechiness, danceability and mode", x = "Danceability", y = "Speechiness") 
 
 ggplotly(energy_plot)
 ```
@@ -79,20 +83,20 @@ ggplotly(energy_plot)
 The biggest difference between the two playlists is the mode of the songs. In the acoustic playlist, **`r round((16 / num_acoustic * 100), digits = 2)`** percent of the songs is in minor key. 
 In the electronic playlist, **`r round((74 / num_electronic * 100), digits = 2)`** percent of the songs is in minor. That is a large difference. That difference is displayed in the barplots shown in this graph. 
 
-The difference in energy is notable. The electronic songs have a more energy than the acoustic songs, as you can see in the graph. 
-
-The mean energy of the acoustic playlist is **`r round((acoustic %>% summarize(mean(energy))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(energy))), digits = 2)`)**. and the mean energy of the electronic playlist is ** `r round((electronic %>% summarize(mean(energy))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(energy))), digits = 2)`) **. 
-
-The higher energy of the electronic playlist could be explained if the tempo of the electronic songs was higher than the tempo of the acoustic songs, but that is not the case, surprisingly. The mean tempo of the acoustic playlist is **`r round((acoustic %>% summarize(mean(tempo))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(tempo))), digits = 2)`)**. and the mean tempo of the electronic playlist is **`r round((electronic %>% summarize(mean(tempo))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(tempo))), digits = 2)`)**. 
-
 The difference in danceability is also visible in the graph. There is not one song on the acoustic playlisy that has a danceability larger than 0.8. In the electronic playlist there are many songs that exceed that threshold. 
 
 The mean danceability of the acoustic playlist is **`r round((acoustic %>% summarize(mean(danceability))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(danceability))), digits = 2)`)**. and the mean danceability of the electronic playlist is **`r round((electronic %>% summarize(mean(danceability))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(danceability))), digits = 2)`)**. 
 
-From this section, we can conclude that electronic songs tend to be more moody than acoustic songs, due to the number of minor songs, acoustic songs are less danceable than electronic ones and have less energy.
+More electronic songs are speechy than aocustic songs. Only 2 acoustic songs have a speechiness higher than 0.1, but the electronic songs have a lot more speechy songs. 
 
-**UPDATE**
-Suddenly, summaries for the electronic playlist return 'NA', while the playlist hasn't changed and the code for computing the summaries haven't changed as well. I don't how to solve this problem, so I will ask dr. Bourgoyne the next lecture how to fix this.
+The mean speechiness of the acoustic playlist is **`r round((acoustic %>% summarize(mean(speechiness))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(speechiness))), digits = 2)`)**. and the mean speechiness of the electronic playlist is **`r round((electronic %>% summarize(mean(speechiness))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(speechiness))), digits = 2)`)**. 
+
+
+The mean energy of the acoustic playlist is **`r round((acoustic %>% summarize(mean(energy))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(energy))), digits = 2)`)**. and the mean energy of the electronic playlist is **`r round((electronic %>% summarize(mean(energy))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(energy))), digits = 2)`)**. 
+
+The higher energy of the electronic playlist could be explained if the tempo of the electronic songs was higher than the tempo of the acoustic songs, but that is not the case, surprisingly. The mean tempo of the acoustic playlist is **`r round((acoustic %>% summarize(mean(tempo))), digits = 2)`, (SD = `r round  ((acoustic %>% summarize(sd(tempo))), digits = 2)`)**. and the mean tempo of the electronic playlist is **`r round((electronic %>% summarize(mean(tempo))), digits = 2)`, (SD = `r round  ((electronic %>% summarize(sd(tempo))), digits = 2)`)**. 
+
+From this section, we can conclude that electronic songs tend to be more moody than acoustic songs, due to the number of minor songs, acoustic songs are less danceable than electronic ones and contain less speech.
 
 ### Chromograms 'Everything'll Be Alright' and 'Dynabeat'
 
@@ -204,7 +208,6 @@ north %>%
     theme_classic() +
     labs(x = '', y = '', title = "'North Swallow' by Barn Swallow (Timbre)")
 ```
-
 
 
 ***
@@ -527,25 +530,23 @@ voleur %>%
     geom_tile() +
     scale_fill_viridis_c(option = 'E', guide = 'none') +
     theme_minimal() +
-    labs(x = 'Time (s)', y = '', title = "'Doesn't Matter (voleur de soleil' by Christine and the Queens")
+    labs(x = 'Time (s)', y = '', title = "'Doesn't Matter (voleur de soleil)' by Christine and the Queens")
 ```
 
 ***
 
 These keygrams aren't all that different. **'Doesn't Matter'** has a large section where a lot of keys match the pitch information, whereas **'Heart's On Fire'** most of the time has one or two clear dark blue lines. This difference could again be explained by the use of multiple instruments at the same time in the electronic songs.
 
-### Large Graph
+### Large Graph NO?
 
 ```{r}
 acoust <-
     get_playlist_audio_features('11122498650', 
                                 '0a2aX4LlpTkeYLuTrVUu88') %>% 
-    slice(1:30) %>% 
     add_audio_analysis()
 elect <-
     get_playlist_audio_features('11122498650', 
                                 '2cANvNRpfzoZ6rkoaJQg25') %>% 
-    slice(1:30) %>% 
     add_audio_analysis()
 singsong <-
     acoust %>% mutate(genre = "Acoustic") %>%
@@ -607,23 +608,351 @@ singsong %>%
 
 ***
 
-The biggest timbre differences seem to be in coefficients c3, c4 and c5, but that should be verified with cepstrograms and listening tests of specific pieces, supported by the Spotify documentation for its timbre features.
+The biggest timbre differences seem to be in coefficients c3, c4 and c5, 
+
+
+### Classification results with confusion matrix
+
+```{r}
+acoustic3 <- 
+    get_playlist_audio_features('11122498650', '0a2aX4LlpTkeYLuTrVUu88') %>% 
+    add_audio_analysis
+
+electronic3 <- 
+    get_playlist_audio_features('11122498650', '2cANvNRpfzoZ6rkoaJQg25') %>% 
+    add_audio_analysis
+```
+
+```{r}
+benja <- 
+    acoustic3 %>% mutate(playlist = "Acoustic Singer-Songwriters") %>% 
+    bind_rows(
+        electronic3 %>% mutate(playlist = "Electronic Singer-Songwriters")) %>% 
+    mutate(playlist = factor(playlist)) %>% 
+    mutate(
+        segments = 
+            map2(segments, key, compmus_c_transpose)) %>% 
+    mutate(
+        pitches = 
+            map(segments, 
+                compmus_summarise, pitches, 
+                method = 'mean', norm = 'manhattan'),
+        timbre =
+            map(
+                segments,
+                compmus_summarise, timbre,
+                method = 'mean')) %>% 
+    mutate(pitches = map(pitches, compmus_normalise, 'clr')) %>% 
+    mutate_at(vars(pitches, timbre), map, bind_rows) %>% 
+    unnest(pitches, timbre)
+```
+
+
+```{r}
+benja_class <- 
+    recipe(playlist ~
+               danceability +
+               energy +
+               loudness +
+               speechiness +
+               acousticness +
+               instrumentalness +
+               liveness +
+               valence +
+               tempo +
+               duration_ms +
+               C + `C#|Db` + D + `D#|Eb` +
+               E + `F` + `F#|Gb` + G +
+               `G#|Ab` + A + `A#|Bb` + B +
+               c01 + c02 + c03 + c04 + c05 + c06 +
+               c07 + c08 + c09 + c10 + c11 + c12,
+           data = benja) %>% 
+    step_center(all_predictors()) %>%
+    step_scale(all_predictors()) %>%
+    # step_range(all_predictors()) %>% 
+    prep(benja) %>% 
+    juice
+```
+
+```{r}
+benja_cv <- benja_class %>% vfold_cv(10)
+```
+
+```{r}
+benja_tree <- decision_tree() %>% set_engine('C5.0')
+predict_tree <- function(split)
+    fit(benja_tree, playlist ~ ., data = analysis(split)) %>% 
+    predict(assessment(split), type = 'class') %>%
+    bind_cols(assessment(split))
+```
+
+```{r eval = F}
+benja_cv %>% 
+    mutate(pred = map(splits, predict_tree)) %>% unnest(pred) %>% 
+    metric_set(accuracy, kap, j_index)(truth = playlist, estimate = .pred_class)
+```
+
+```{r eval = F}
+benja_class %>% 
+    fit(benja_tree, playlist ~ ., data = .) %>% 
+    pluck('fit') %>%
+    summary
+```
+
+```{r}
+benja_forest <- rand_forest() %>% set_engine('randomForest')
+predict_forest <- function(split)
+    fit(benja_forest, playlist ~ ., data = analysis(split)) %>% 
+    predict(assessment(split), type = 'class') %>%
+    bind_cols(assessment(split))
+```
+
+
+```{r}
+benja_knn <- nearest_neighbor(neighbors = 1) %>% set_engine('kknn')
+predict_knn <- function(split)
+    fit(benja_knn, playlist ~ ., data = analysis(split)) %>% 
+    predict(assessment(split), type = 'class') %>%
+    bind_cols(assessment(split))
+```
+
+
+```{r eval = F}
+benja_cv %>% 
+    mutate(pred = map(splits, predict_knn)) %>% unnest(pred) %>% 
+    conf_mat(truth = playlist, estimate = .pred_class)
+```
+
+```{r}
+benja_cv %>% 
+    mutate(pred = map(splits, predict_knn)) %>% unnest(pred) %>% 
+    conf_mat(truth = playlist, estimate = .pred_class) %>% 
+    autoplot(type = 'heatmap')
+```
+
+```{r eval = F}
+benja_cv %>% 
+    mutate(pred = map(splits, predict_forest)) %>% 
+    unnest(pred) %>% 
+    metric_set(accuracy, kap, j_index)(truth = playlist, estimate = .pred_class)
+```
+
+***
+
+With the decision tree made a prediction with an accuracay of 0.8628692. The most distinctive features, according to the model, are danceability, and timbre features c08 and c06.  
+Speechiness is very high as well. In the graph I made earlier in the project, I've changed the energy parameter to speechiness. 
+
+The decision matrix shows that the 2 playlists are distinctive, since the playlists are recognized as themselves in roughly 75% percent of the cases.
+
+### Randomforests 
+
+```{r}
+benja_class %>% 
+    fit(benja_forest, playlist ~ ., data = .) %>% 
+    pluck('fit') %>% 
+    randomForest::varImpPlot()
+```
+
+***
+
+Here, the most distinctive features are pitch class C, speechiness and timbre features c04, c06, c08.  
+
+```{r}
+acoustic4 <- 
+    get_playlist_audio_features('11122498650', '0a2aX4LlpTkeYLuTrVUu88') %>% 
+    add_audio_analysis %>% 
+    mutate(
+        segments = 
+            map2(segments, key, compmus_c_transpose)) %>% 
+    mutate(
+        pitches = 
+            map(segments, 
+                compmus_summarise, pitches, 
+                method = 'mean', norm = 'manhattan'),
+        timbre =
+            map(
+                segments,
+                compmus_summarise, timbre,
+                method = 'mean')) %>% 
+    mutate(pitches = map(pitches, compmus_normalise, 'clr')) %>% 
+    mutate_at(vars(pitches, timbre), map, bind_rows) %>% 
+    unnest(pitches, timbre)
+```
+
+```{r}
+electronic4 <- 
+    get_playlist_audio_features('11122498650', '2cANvNRpfzoZ6rkoaJQg25') %>% 
+    add_audio_analysis %>% 
+    mutate(
+        segments = 
+            map2(segments, key, compmus_c_transpose)) %>% 
+    mutate(
+        pitches = 
+            map(segments, 
+                compmus_summarise, pitches, 
+                method = 'mean', norm = 'manhattan'),
+        timbre =
+            map(
+                segments,
+                compmus_summarise, timbre,
+                method = 'mean')) %>% 
+    mutate(pitches = map(pitches, compmus_normalise, 'clr')) %>% 
+    mutate_at(vars(pitches, timbre), map, bind_rows) %>% 
+    unnest(pitches, timbre)
+```
+
+```{r}
+acoustic_juice <- 
+    recipe(track_name ~
+               danceability +
+               energy +
+               loudness +
+               speechiness +
+               acousticness +
+               instrumentalness +
+               liveness +
+               valence +
+               tempo +
+               duration_ms +
+               C + `C#|Db` + D + `D#|Eb` +
+               E + `F` + `F#|Gb` + G +
+               `G#|Ab` + A + `A#|Bb` + B +
+               c01 + c02 + c03 + c04 + c05 + c06 +
+               c07 + c08 + c09 + c10 + c11 + c12,
+           data = acoustic4) %>% 
+    #step_center(all_predictors()) %>%
+    #step_scale(all_predictors()) %>%
+    step_range(all_predictors()) %>% 
+    prep(acoustic4%>% mutate(track_name = str_trunc(track_name, 20))) %>% 
+    juice %>% 
+    column_to_rownames('track_name')
+```
+
+```{r}
+electronic_juice <- 
+    recipe(track_name ~
+               danceability +
+               energy +
+               loudness +
+               speechiness +
+               acousticness +
+               instrumentalness +
+               liveness +
+               valence +
+               tempo +
+               duration_ms +
+               C + `C#|Db` + D + `D#|Eb` +
+               E + `F` + `F#|Gb` + G +
+               `G#|Ab` + A + `A#|Bb` + B +
+               c01 + c02 + c03 + c04 + c05 + c06 +
+               c07 + c08 + c09 + c10 + c11 + c12,
+           data = electronic4) %>% 
+    #step_center(all_predictors()) %>%
+    #step_scale(all_predictors()) %>%
+    step_range(all_predictors()) %>% 
+    prep(electronic4 %>% mutate(track_name = str_trunc(track_name, 20))) %>% 
+    juice %>% 
+    column_to_rownames('track_name')
+```
+
+```{r}
+acoustic_dist <- dist(acoustic_juice, method = 'euclidean')
+```
+
+```{r}
+electronic_dist <- dist(electronic_juice, method = 'euclidean')
+```
+
+
+```{r eval = F}
+hclust(acoustic_dist, method = 'single') %>% dendro_data %>% ggdendrogram
+```
+
+```{r eval = F}
+hclust(electronic_dist, method = 'single') %>% dendro_data %>% ggdendrogram
+```
+
+
+### 12.5 Acoustic
+
+```{r}
+acoustic_dendrogram <- protoclust(acoustic_dist) %>% dendro_data %>% ggdendrogram
+ggplotly(acoustic_dendrogram)
+```
+
+***
+
+### 12.5 Electronic
+
+```{r}
+electronic_dendrogram <- protoclust(electronic_dist) %>% dendro_data %>% ggdendrogram
+ggplotly(electronic_dendrogram)
+```
+
+```{r eval = F}
+kmeans(acoustic_juice, 4)
+```
+
+
+```{r eval = F}
+kmeans(electronic_juice, 4)
+```
+
+
+### 12.7 Acoustic
+
+```{r}
+grDevices::dev.size("px")
+heatmaply(
+    acoustic_juice,
+    hclustfun = hclust,
+    # hclustfun = protoclust,
+    # Comment out the hclust_method line when using protoclust.
+    hclust_method = 'average',
+    dist_method = 'euclidean')
+```
+
+***
+
+In the acoustic playlist, the most distinctive features are energy, loudness, speechiness and timbre features c02 and c03.
+
+### 12.7 Electronic
+
+```{r}
+grDevices::dev.size("px")
+heatmaply(
+    electronic_juice,
+    hclustfun = hclust,
+    # hclustfun = protoclust,
+    # Comment out the hclust_method line when using protoclust.
+    hclust_method = 'average',
+    dist_method = 'euclidean')
+```
+
+
+***
+
+In the electronic playlist, the most distinctive features are danceability, energy instrumentalnes and timbre features c06 and c08.
+
 
 ### Conclusion
 
 **Conclusion**
 
 - Electronic more minor songs
-- Electronic higher danceability and energy
+- Electronic higher danceability
+- Acoustic songs have a lower standard deviation. They represent a coherent group more strongly.
 - Electronic songs have more pitch classes in the songs
 - Acoustic songs have a clearer structure in chordprogressions and keys.
 - Electronic songs have more timbre variation
+- The most distinctive features of the playlists are danceability, speechiness and timbre features   c06 and c08.
+- The acoustic playlist represents a more coherent genre than the electronic playlist.
 
 *** 
 
 **Suggestions for improvement **
 
 - Automatically compute percentage of minor songs.
+- Interpret the heatmaply results.
 - Write conclusion
-- 
 
